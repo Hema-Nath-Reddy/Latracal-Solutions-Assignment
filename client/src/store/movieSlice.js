@@ -104,6 +104,20 @@ export const removeFromWatchlist = createAsyncThunk(
   }
 );
 
+export const fetchReview = createAsyncThunk(
+  "moves/fetchReview",
+  async (movieId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/movie/${movieId}/reviews`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const submitReview = createAsyncThunk(
   "movies/submitReview",
   async ({ movieId, userId, rating, reviewText }, { rejectWithValue }) => {
@@ -170,7 +184,8 @@ const movieSlice = createSlice({
     selectedMovie: null,
     cast: [],
     watchlist: [],
-    watchlistMovies: [], // A new state for cast data
+    watchlistMovies: [],
+    movieReviews: [], // A new state for cast data
     status: "idle",
     error: null,
   },
@@ -237,6 +252,17 @@ const movieSlice = createSlice({
       })
       .addCase(removeFromWatchlist.fulfilled, (state, action) => {
         state.watchlist = action.payload.watchlist; // Update watchlist after removing
+      })
+      .addCase(fetchReview.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchReview.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.movieReviews = action.payload; // Store reviews here
+      })
+      .addCase(fetchReview.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       })
       .addCase(submitReview.pending, (state) => {
         state.status = "loading";

@@ -15,6 +15,7 @@ const MovieDetail = () => {
   const { isAuthenticated, user } = useAuth();
   const movie = useSelector((state) => state.movies.selectedMovie);
   const cast = useSelector((state) => state.movies.cast);
+  const reviews = useSelector((state) => state.movies.movieReviews);
   const status = useSelector((state) => state.movies.status);
   const error = useSelector((state) => state.movies.error);
   const [rating, setRating] = useState(0);
@@ -34,13 +35,25 @@ const MovieDetail = () => {
     dispatch(
       submitReview({
         movieId: id,
-        userId: user.id, // Assuming user.id is the current user's ID
+        userId: user.id,
         rating,
         reviewText,
       })
     );
     setRating(0);
     setReviewText("");
+  };
+
+  const handleWatchTrailer = () => {
+    const trailer = movie?.videos?.results.find(
+      (vid) => vid.site === "YouTube" && vid.type === "Trailer"
+    );
+
+    if (trailer) {
+      window.open(`https://www.youtube.com/watch?v=${trailer.key}`, "_blank");
+    } else {
+      alert("Trailer not found.");
+    }
   };
 
   const primaryColor = "#ea2a33";
@@ -58,6 +71,9 @@ const MovieDetail = () => {
       </div>
     );
   }
+
+  // --- The console.log has been added here ---
+  console.log("Movie data:", movie);
 
   const renderStars = (starRating, isClickable = false) => {
     const stars = [];
@@ -107,7 +123,10 @@ const MovieDetail = () => {
                 {movie.vote_average} • {movie.runtime}m
               </p>
               <div className="mt-6">
-                <button className="inline-flex items-center justify-center gap-2 rounded-md bg-red-600 px-6 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-100">
+                <button
+                  onClick={handleWatchTrailer}
+                  className="inline-flex items-center justify-center gap-2 rounded-md bg-red-600 px-6 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-100"
+                >
                   <svg
                     fill="currentColor"
                     height="20px"
@@ -149,7 +168,7 @@ const MovieDetail = () => {
             <section className="mt-12">
               <h2 className="text-2xl font-bold text-white">Reviews</h2>
               <div className="mt-6 space-y-8">
-                {movie.reviews?.map((review) => (
+                {reviews?.map((review) => (
                   <div
                     key={review._id}
                     className="rounded-lg border border-gray-800 bg-gray-900 p-6"
@@ -158,7 +177,7 @@ const MovieDetail = () => {
                       <div
                         className="h-12 w-12 flex-shrink-0 rounded-full bg-cover bg-center"
                         style={{
-                          backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuAYHw36rNFFW09BvMR_7wiD7g4gY8e1acwFROSNFc1Ln0mPoeUeN8tamlq1niVimv2cfBtJ85-Mgh6hJa9xZn8J-vbQjQleHzoKDKQ_jYbaZbnoHMCP26rPNyza8wBdC3EnohA8KiiYZwq1XDsQMWi3HIsEVe2O-LNRNzSERzagnDWR3-nypBpa7wbS0OJy9W14VprgaAhY407vLEkbPlaK9kRW1IDYtoDtqhyfShrJ975OxAmKAI0FNULbRStDim8PkyqJI9NXpBA")`,
+                          backgroundImage: `url(https://ui-avatars.com/api/?name=${review.author})`,
                         }}
                       ></div>
                       <div className="flex-1">
@@ -212,7 +231,7 @@ const MovieDetail = () => {
                           Your Review
                         </label>
                         <textarea
-                          className="mt-2 block w-full rounded-md border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:border-red-600 focus:ring-red-600 sm:text-sm"
+                          className="p-2 mt-2 block w-full rounded-md border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:border-red-600 focus:ring-red-600 sm:text-sm"
                           id="review"
                           name="review"
                           placeholder="Share your thoughts on the movie..."

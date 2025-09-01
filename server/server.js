@@ -201,44 +201,104 @@ app.post("/movie", async (req, res) => {
   }
 });
 
+//API Integrated
 //GET /movies/:id/reviews - Retrieve reviews for a specific movie
-app.get("/movies/:id/reviews", async (req, res) => {
+app.get("/movie/:id/reviews", async (req, res) => {
   try {
     const { id } = req.params;
-    const response = await db
+
+    // Use the aggregation pipeline to join reviews with user details
+    const reviewsWithUsers = await db
       .collection("reviews")
-      .find({ movieId: id })
+      .aggregate([
+        // Match reviews for the specific movie ID
+        {
+          $match: {
+            movieId: id,
+          },
+        },
+        // Perform a lookup to join with the 'users' collection
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "reviewerDetails",
+          },
+        },
+        // Unwind the reviewerDetails array to get a single user object
+        {
+          $unwind: "$reviewerDetails",
+        },
+        // Project the final output to select only the fields you need
+        {
+          $project: {
+            _id: 1,
+            movieId: 1,
+            reviewText: 1,
+            rating: 1,
+            timestamp: 1,
+            author: "$reviewerDetails.username", // Use the username from the joined user document
+            profilePicture: "$reviewerDetails.profilePicture", // Use the profile picture from the joined user document
+          },
+        },
+      ])
       .toArray();
-    if (response) {
-      res.status(200).json(response);
+
+    if (reviewsWithUsers) {
+      res.status(200).json(reviewsWithUsers);
     } else {
       res.status(404).json({ message: "No reviews found" });
     }
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching reviews from TMDB",
+      message: "Error fetching reviews",
       error: error.message,
     });
   }
 });
-
+//API Integrated
 //POST /movies/:id/reviews - Submit a new review for a movie
 app.post("/movies/:id/review", async (req, res) => {
   try {
     const { id } = req.params;
-    const { reviewText, name, userId, rating } = req.body;
-    const response = await db
-      .collection("reviews")
-      .insertOne({ movieId: id, reviewText, name, userId, rating });
-    if (response) {
-      const movieId = response.insertedId;
-      res.status(201).json({ message: "Review added successfully", movieId });
+    const { reviewText, userId, rating } = req.body;
+
+    // 1. Validate the user ID
+    if (!ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    // 2. Find the user to get their username
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(userId) });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // 3. Create the review document
+    const newReview = {
+      movieId: id, // Store TMDB ID as string
+      reviewText,
+      author: user.username, // Use username from database for security
+      userId: new ObjectId(userId),
+      rating: Number(rating),
+      timestamp: new Date(),
+    };
+
+    // 4. Insert the new review into the database
+    const response = await db.collection("reviews").insertOne(newReview);
+
+    if (response.insertedId) {
+      // Return the complete review document
+      res.status(201).json({ ...newReview, _id: response.insertedId });
     } else {
       res.status(500).json({ message: "Error adding review" });
     }
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching movies from TMDB",
+      message: "Error submitting review",
       error: error.message,
     });
   }
