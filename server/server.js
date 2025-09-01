@@ -76,6 +76,7 @@ app.get("/movies", async (req, res) => {
     });
   }
 });
+
 //GET /movies/:id - Retrieve a specific movie with reviews
 app.get("/movie/:id", async (req, res) => {
   try {
@@ -103,6 +104,7 @@ app.get("/movie/:id", async (req, res) => {
     });
   }
 });
+
 //POST /movies - Add a new movie (admin only)
 app.post("/movie", async (req, res) => {
   try {
@@ -131,6 +133,7 @@ app.post("/movie", async (req, res) => {
     });
   }
 });
+
 //GET /movies/:id/reviews - Retrieve reviews for a specific movie
 app.get("/movies/:id/reviews", async (req, res) => {
   try {
@@ -151,6 +154,7 @@ app.get("/movies/:id/reviews", async (req, res) => {
     });
   }
 });
+
 //POST /movies/:id/reviews - Submit a new review for a movie
 app.post("/movies/:id/review", async (req, res) => {
   try {
@@ -172,6 +176,8 @@ app.post("/movies/:id/review", async (req, res) => {
     });
   }
 });
+
+//API Integrated
 //GET /users/:id - Retrieve user profile and review history
 app.get("/users/:id", async (req, res) => {
   try {
@@ -221,6 +227,7 @@ app.put("/users/:id", async (req, res) => {
     });
   }
 });
+
 //GET /users/:id/watchlist - Retrieve user's watchlist
 app.get("/users/:id/watchlist", async (req, res) => {
   try {
@@ -280,6 +287,7 @@ app.post("/users/:id/watchlist", async (req, res) => {
     });
   }
 });
+
 //DELETE /users/:id/watchlist/:movieId - Remove movie from watchlist
 app.delete("/user/:id/watchlist", async (req, res) => {
   try {
@@ -310,6 +318,7 @@ app.delete("/user/:id/watchlist", async (req, res) => {
     });
   }
 });
+
 const port = process.env.PORT || 3001;
 app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
