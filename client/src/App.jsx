@@ -6,7 +6,7 @@ import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import Movies from "./pages/Movies";
 import WatchList from "./pages/WatchList";
-import MovieDetail from "./pages/MovieDetai";
+import MovieDetail from "./pages/MovieDetail";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
@@ -42,15 +42,12 @@ function App() {
         {
           path: "/signup",
           element: <SignUp />,
-        } /* ,
-        
-        
+        },
+
         {
-          path: "/movieDetail",
+          path: "/movieDetail/:id",
           element: <MovieDetail />,
-        } */,
-        ,
-        ,
+        },
       ],
     },
   ];

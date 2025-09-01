@@ -10,6 +10,7 @@ const SignUp = () => {
   const [profilePicture, setProfilePicture] = useState(null);
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Sign up function has been called.");
   };
   return (
     <div
@@ -25,14 +26,14 @@ const SignUp = () => {
                 Create an account
               </h2>
             </div>
-            <form action="#" className="mt-8 space-y-6" method="POST">
+            <div className="mt-8 space-y-6">
               <div className="rounded-md shadow-sm -space-y-px">
                 <div>
                   <label className="sr-only" htmlFor="username">
                     Username
                   </label>
                   <input
-                    className="form-input appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] focus:z-10 sm:text-sm rounded-t-md"
+                    className="relative block w-full appearance-none rounded-md border border-gray-700 bg-gray-800/50 px-3 py-3 text-white placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-[var(--primary-color)] sm:text-sm rounded-t-md"
                     style={{ "--primary-color": primaryColor }}
                     id="username"
                     name="username"
@@ -49,7 +50,7 @@ const SignUp = () => {
                   </label>
                   <input
                     autocomplete="email"
-                    className="form-input appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] focus:z-10 sm:text-sm"
+                    className="relative block w-full appearance-none rounded-md border border-gray-700 bg-gray-800/50 px-3 py-3 text-white placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-[var(--primary-color)] sm:text-sm"
                     style={{ "--primary-color": primaryColor }}
                     id="email-address"
                     name="email"
@@ -66,7 +67,7 @@ const SignUp = () => {
                   </label>
                   <input
                     autocomplete="current-password"
-                    className="form-input appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] focus:z-10 sm:text-sm"
+                    className="relative block w-full appearance-none rounded-md border border-gray-700 bg-gray-800/50 px-3 py-3 text-white placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-[var(--primary-color)] sm:text-sm"
                     style={{ "--primary-color": primaryColor }}
                     id="password"
                     name="password"
@@ -82,7 +83,7 @@ const SignUp = () => {
                     Confirm Password
                   </label>
                   <input
-                    className="form-input appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-700 bg-gray-800 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] focus:z-10 sm:text-sm rounded-b-md"
+                    className="relative block w-full appearance-none rounded-md border border-gray-700 bg-gray-800/50 px-3 py-3 text-white placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-[var(--primary-color)] sm:text-sm rounded-b-md"
                     style={{ "--primary-color": primaryColor }}
                     id="confirm-password"
                     name="confirm-password"
@@ -127,14 +128,14 @@ const SignUp = () => {
               </div>
               <div>
                 <button
-                  type="submit"
+                  onClick={handleSubmit}
                   className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--primary-color)] hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-[var(--primary-color)]"
                   style={{ "--primary-color": primaryColor }}
                 >
                   Sign Up
                 </button>
               </div>
-            </form>
+            </div>
             <div className="text-center">
               <p className="text-sm text-gray-400">
                 Already have an account?
