@@ -1,10 +1,41 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMovies } from "../store/movieSlice";
 const Movies = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const movies = [
+  const dispatch = useDispatch();
+  const movieData = useSelector((state) => state.movies.data);
+  const status = useSelector((state) => state.movies.status);
+  const error = useSelector((state) => state.movies.error);
+  useEffect(() => {
+    dispatch(fetchMovies({ page: 1 }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "succeeded" && movieData) {
+      console.log(
+        "Movie data successfully fetched and is available:",
+        movieData
+      );
+    }
+  }, [movieData, status]);
+
+  const primaryColor = "#ea2a33";
+  if (status === "loading") {
+    return <div className="text-white text-center p-8">Loading movies...</div>;
+  }
+
+  if (status === "failed") {
+    return (
+      <div className="text-red-500 text-center p-8">
+        Error: {error ? error.status_message : "Something went wrong"}
+      </div>
+    );
+  }
+  /* const movies = [
     {
       id: 1,
       title: "Movie Title 1",
@@ -65,7 +96,7 @@ const Movies = () => {
       title: "Movie Title 12",
       url: "https://lh3.googleusercontent.com/aida-public/AB6AXuBjZftuML2XUEo8K4gzlTKCjcxM-q8l0eelapGx6QWNwIvnMkfMvNxraMCZx0C1p7E8M9bN-aXf41L8g6deRdaiUCGF7TyLAGurevs4ZlAvROlT5Ys9KpkCjlta314bx97X1fTWXFCVj_zZwEfuhZCemw3dxeMPe3VC6ZSTi5HBj6ZGSLKqaSC6aJTq6_DzLl14Clsm9gcHTT7fOVlJqpfxEstLIuMhGg_gsubQFmxVEsKy1u4JaYs6ef4Z8xr5jNA1WFinQaKY6QE",
     },
-  ];
+  ]; */
 
   return (
     <div
@@ -74,10 +105,10 @@ const Movies = () => {
     >
       <div className="layout-container flex h-full grow flex-col">
         <div className="flex flex-1">
-          <aside className="w-full max-w-xs flex-col border-r border-gray-800 p-4 lg:flex hidden">
+          <aside className="hidden lg:flex flex-col w-64  border-r border-gray-800 p-4">
             <div className="px-4 py-3">
               <label className="flex flex-col min-w-40 h-12 w-full">
-                <div className="flex w-full flex-1 items-stretch rounded-md h-full">
+                <div className="flex w-full flex-1 items-stretch rounded-md h-full ">
                   <div
                     className="text-gray-400 flex border border-gray-700 bg-gray-800 items-center justify-center pl-3 rounded-l-md border-r-0"
                     data-icon="MagnifyingGlass"
@@ -163,7 +194,7 @@ const Movies = () => {
                 </div>
               </details>
             </div>
-            <div className="flex px-4 py-3 justify-end mt-auto">
+            <div className="flex px-4 py-3 justify-end ">
               <button className="flex min-w-[84px] w-full max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-md h-10 px-4 bg-[#ea2a33] hover:bg-red-700 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
                 <span className="truncate">Apply Filters</span>
               </button>
@@ -176,7 +207,7 @@ const Movies = () => {
               </h1>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-              {movies.map((movie, index) => (
+              {movieData.map((movie, index) => (
                 <div
                   key={index}
                   className="cursor-pointer  group flex flex-col gap-2"
@@ -186,7 +217,9 @@ const Movies = () => {
                 >
                   <div
                     className="w-full bg-center bg-no-repeat aspect-[2/3] bg-cover rounded-md overflow-hidden transform group-hover:scale-105 transition-transform duration-300"
-                    style={{ backgroundImage: `url("${movie.url}")` }}
+                    style={{
+                      backgroundImage: `url(https://image.tmdb.org/t/p/w500/${movie.poster_path})`,
+                    }}
                   ></div>
                   <h4 className="text-white text-sm font-semibold truncate">
                     {movie.title}
