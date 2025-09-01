@@ -92,7 +92,3 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 </ul> 
 
 <hr> 
-<p>
-  <em>Note:</em> GitHub READMEs support a subset of HTML tags and sanitize disallowed tags. 
-  Stick to headings, paragraphs, lists, code blocks, tables, and images for the most consistent rendering.
-</p>
