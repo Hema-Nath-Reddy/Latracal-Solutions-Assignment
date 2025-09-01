@@ -9,6 +9,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import axios from "axios";
+dotenv.config();
 
 const TMDB_API_KEY = process.env.TMDB_KEY;
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
@@ -20,7 +21,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 let db;
-dotenv.config();
+
 async function connectToDB() {
   try {
     const uri = `${process.env.MONGODB_URI}`;
@@ -45,35 +46,53 @@ app.get("/movies", async (req, res) => {
   try {
     const { query, genre, page = 1 } = req.query;
 
-    let tmdbUrl = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&page=${page}`;
+    // Use only the API key method (remove Bearer token to avoid conflicts)
+    let tmdbUrl;
 
     if (query) {
-      tmdbUrl = `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+      // 🔍 Use TMDB search endpoint when user provides a query
+      tmdbUrl = `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(
         query
-      )}&page=${page}`;
+      )}&page=${page}&include_adult=false`;
+    } else {
+      // 🎬 Default discover endpoint
+      tmdbUrl = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&include_adult=false&include_video=false&language=en-US&page=${page}&sort_by=popularity.desc`;
+
+      // Optionally add genre filter if provided
+      if (genre) {
+        tmdbUrl += `&with_genres=${genre}`;
+      }
     }
-    // You can add logic for genre filtering here if TMDB's API supports it directly.
 
     const response = await axios.get(tmdbUrl, {
-      headers: { Accept: "application/json" },
+      headers: {
+        Accept: "application/json",
+      },
       httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-      // 👈 bypass SSL check
     });
+
     const tmdbMovies = response.data.results;
 
-    // Optionally, you can now check your local database for any custom reviews or ratings
-    // and merge them with the TMDB data before sending the response.
-
-    if (tmdbMovies) {
-      res.status(200).json(tmdbMovies);
+    if (tmdbMovies && tmdbMovies.length > 0) {
+      return res.status(200).json(tmdbMovies); // Add return to prevent further execution
     } else {
-      res.status(404).json({ message: "No movies found" });
+      return res.status(404).json({ message: "No movies found" }); // Add return
     }
   } catch (error) {
-    res.status(500).json({
-      message: "Error fetching movies from TMDB",
-      error: error.message,
+    console.log("Error details:", {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message,
     });
+
+    // Only send error response if no response has been sent yet
+    if (!res.headersSent) {
+      return res.status(500).json({
+        message: "Error fetching movies from TMDB",
+        error: error.response?.data || error.message,
+      });
+    }
   }
 });
 
@@ -323,5 +342,5 @@ const port = process.env.PORT || 3001;
 app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
   console.log("Connecting to MongoDB...");
-  /*   await connectToDB(); */
+  await connectToDB();
 });
