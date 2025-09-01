@@ -1,7 +1,7 @@
 Movie Review Platform
 This is a comprehensive full-stack application for a movie review platform. The application allows users to browse movies, view detailed information, read and submit reviews, and manage a personal watchlist. The project is built with a modern technology stack, focusing on performance, scalability, and clean code architecture.
 
-Key Features
+Key Features:
 User Authentication: Secure user sign-up and login with password hashing.
 
 Dynamic Movie Listings: Fetches trending movies from TMDB and supports searching and filtering by genre, year, and rating.
@@ -27,22 +27,18 @@ Setup and Installation
 Follow these steps to get the project up and running on your local machine.
 
 1. Clone the Repository
-Bash
-
 git clone https://github.com/Hema-Nath-Reddy/Latracal-Solutions-Assignment
 cd your-repository-name
-2. Backend Setup
-Navigate to the server directory, install the dependencies, and start the server.
 
-Bash
+3. Backend Setup
+Navigate to the server directory, install the dependencies, and start the server.
 
 cd server
 npm install
 npm start
+
 3. Frontend Setup
 Open a new terminal window, navigate to the project's root directory, and install the frontend dependencies.
-
-Bash
 
 npm install
 npm run dev
@@ -51,10 +47,8 @@ The application should now be running at http://localhost:5173.
 Environment Variables
 The application requires environment variables for both the backend and frontend to function correctly.
 
-Backend (server/.env)
+Backend 
 Create a .env file in your server directory with the following variables:
-
-Bash
 
 MONGODB_URI=your_mongodb_connection_string
 TMDB_KEY=your_tmdb_api_key
@@ -62,13 +56,7 @@ TMDB_ACCESS_TOKEN=your_tmdb_v4_access_token
 CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-Frontend (.env)
-Create a .env file in your project's root directory:
 
-Bash
-
-VITE_TMDB_API_KEY=your_tmdb_api_key
-VITE_TMDB_ACCESS_TOKEN=your_tmdb_v4_access_token
 API Documentation
 The backend exposes a RESTful API to manage movies, reviews, and user data.
 
