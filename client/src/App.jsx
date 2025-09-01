@@ -10,6 +10,7 @@ import MovieDetail from "./pages/MovieDetai";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import SignUp from "./pages/Signup";
+import { AuthProvider, ProtectedRoute } from "./Hooks/useAuth";
 
 function App() {
   const routes = [
@@ -56,9 +57,11 @@ function App() {
 
   const router = createBrowserRouter(routes);
   return (
-    <h1 className="bg-gray-950">
-      <RouterProvider router={router} />
-    </h1>
+    <div className="bg-gray-950">
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </div>
   );
 }
 

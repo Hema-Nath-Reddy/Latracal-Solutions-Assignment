@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-
+import { useAuth } from "../Hooks/useAuth";
+import { Bookmark } from "lucide-react";
 const Navbar = () => {
   const primaryColor = "#ea2a33";
   const navigate = useNavigate();
-  const loggedIn = false;
+  const { isAuthenticated, logout } = useAuth();
   return (
     <header className="w-full flex items-center justify-between bg-black whitespace-nowrap border-b border-gray-800 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-[1000] shadow-md">
       <div className="flex items-center gap-6 lg:gap-10">
@@ -83,7 +84,7 @@ const Navbar = () => {
         </label> */}
 
         {/* Bookmark Button */}
-        {loggedIn ? (
+        {isAuthenticated ? (
           <>
             {" "}
             <button
@@ -92,27 +93,26 @@ const Navbar = () => {
               }}
               className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-md h-10 w-10 bg-gray-800 hover:bg-gray-700 text-white transition-colors"
             >
-              <svg
-                fill="currentColor"
-                height="20px"
-                viewBox="0 0 256 256"
-                width="20px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,177.57-51.77-32.35a8,8,0,0,0-8.48,0L72,209.57V48H184Z" />
-              </svg>
+              <Bookmark />
             </button>
             {/* Avatar */}
             <button
               onClick={() => {
                 navigate("/profile");
               }}
-              className="cursor-pointerbg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+              className="cursor-pointer bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
               style={{
                 backgroundImage:
                   'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDRwvFniIOmhzeb-BKlaHDUMCqt_uEp5DNKC8oQPDFKXwRQOkqSkzhGnBimMpXWBzWo6A8fzScBEmIeD-21dHZTZEFOsjNko5Fo_ziwxIchzDNp9i8-_x6pycarwtdN_UPQxKxWRVGj7ySIDI4YYuGW3ngh8OVByqCF3S4XgRhdB1jNq_51L3M4urFJb1eEGArFNgNjRTZPYXQ_5QrR2fkGPzDopAAD6brgwyS05TMvJQXC_NfoS4e8P7Og1u0qS-9h8ZzTCSkASJg")',
               }}
             />
+            {/* Add a logout button */}
+            <button
+              onClick={logout}
+              className="cursor-pointer py-2 px-4 bg-gray-800 rounded-md text-sm font-semibold hover:bg-gray-700 transition-colors"
+            >
+              Logout
+            </button>
           </>
         ) : (
           <>

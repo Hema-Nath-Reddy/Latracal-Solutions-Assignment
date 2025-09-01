@@ -1,7 +1,24 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { React, useState } from "react";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../Hooks/useAuth";
 const Login = () => {
   const primaryColor = "#ea2a33";
+
+  const { isAuthenticated, loading, login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/profile", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    login(email, password);
+  };
 
   return (
     <div
@@ -28,13 +45,13 @@ const Login = () => {
                 Sign in to continue your movie journey
               </p>
             </div>
-            <form className="space-y-6">
+            <div className="space-y-6">
               <div>
                 <label className="sr-only" htmlFor="email">
                   Email address
                 </label>
                 <input
-                  autocomplete="email"
+                  autoComplete="email"
                   className="relative block w-full appearance-none rounded-md border border-gray-700 bg-gray-800/50 px-3 py-3 text-white placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-[var(--primary-color)] sm:text-sm"
                   style={{ "--primary-color": primaryColor }}
                   id="email"
@@ -42,6 +59,8 @@ const Login = () => {
                   placeholder="Email address"
                   required
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div>
@@ -57,6 +76,8 @@ const Login = () => {
                   placeholder="Password"
                   required
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               <div className="flex items-center justify-end">
@@ -74,12 +95,13 @@ const Login = () => {
                 <button
                   className="group relative flex w-full justify-center rounded-md border border-transparent bg-[var(--primary-color)] py-3 px-4 text-sm font-semibold text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors"
                   style={{ "--primary-color": primaryColor }}
-                  type="submit"
+                  disabled={loading}
+                  onClick={handleSubmit}
                 >
-                  Login
+                  {loading ? "Logging in..." : "Login"}
                 </button>
               </div>
-            </form>
+            </div>
             <p className="mt-6 text-center text-sm text-gray-400">
               Don't have an account?
               <Link

@@ -1,8 +1,16 @@
-import React from "react";
+import { React, useState } from "react";
+import { ImageUp } from "lucide-react";
 import { Link } from "react-router-dom";
 const SignUp = () => {
   const primaryColor = "#ea2a33";
-
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [profilePicture, setProfilePicture] = useState(null);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
   return (
     <div
       className="relative flex size-full min-h-screen flex-col bg-[#1a1a1a] dark group/design-root overflow-x-hidden"
@@ -31,6 +39,8 @@ const SignUp = () => {
                     placeholder="Username"
                     required
                     type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </div>
                 <div>
@@ -46,6 +56,8 @@ const SignUp = () => {
                     placeholder="Email address"
                     required
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div>
@@ -61,6 +73,8 @@ const SignUp = () => {
                     placeholder="Password"
                     required
                     type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
                 <div>
@@ -75,6 +89,8 @@ const SignUp = () => {
                     placeholder="Confirm Password"
                     required
                     type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                   />
                 </div>
               </div>
@@ -84,21 +100,8 @@ const SignUp = () => {
                   Profile Picture{" "}
                 </label>
                 <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    <svg
-                      aria-hidden="true"
-                      className="mx-auto h-12 w-12 text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 48 48"
-                    >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                      ></path>
-                    </svg>
+                  <div className="space-y-1 items-center">
+                    <ImageUp className="mx-auto h-12 w-12 text-gray-500" />
                     <div className="flex text-sm text-gray-400">
                       <label
                         className="relative cursor-pointer bg-gray-800 rounded-md font-medium text-[var(--primary-color)] hover:text-red-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-800 focus-within:ring-[var(--primary-color)]"
@@ -111,6 +114,7 @@ const SignUp = () => {
                           id="file-upload"
                           name="file-upload"
                           type="file"
+                          onChange={(e) => setProfilePicture(e.target.files[0])}
                         />
                       </label>
                       <p className="pl-1">or drag and drop</p>

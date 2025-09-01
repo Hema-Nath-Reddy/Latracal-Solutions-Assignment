@@ -1,6 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../Hooks/useAuth";
+import { Star, ArrowRight } from "lucide-react";
+
 const Profile = () => {
+  const { isAuthenticated } = useAuth();
   const reviews = [
     { movie: "The Midnight Bloom", rating: 4 },
     { movie: "Echoes of the Past", rating: 5 },
@@ -14,16 +18,10 @@ const Profile = () => {
     for (let i = 0; i < 5; i++) {
       if (i < rating) {
         stars.push(
-          <i key={i} className="material-icons text-base">
-            star
-          </i>
+          <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
         );
       } else {
-        stars.push(
-          <i key={i} className="material-icons text-base text-gray-500">
-            star_border
-          </i>
-        );
+        stars.push(<Star key={i} className="w-5 h-5 text-gray-500" />);
       }
     }
     return stars;
@@ -34,87 +32,117 @@ const Profile = () => {
       className="relative flex size-full min-h-screen flex-col bg-gray-950 dark group/design-root overflow-x-hidden"
       style={{ fontFamily: '"Plus Jakarta Sans", "Noto Sans", sans-serif' }}
     >
-      <div className="layout-container flex h-full grow flex-col">
-        <main className="px-28 flex-1 py-10">
-          <div className="layout-content-container flex flex-col max-w-[960px] flex-1 mx-auto">
-            <div className="flex p-4 @container">
-              <div className="flex w-full flex-col gap-6 items-center">
-                <div className="flex gap-6 flex-col items-center">
-                  <div
-                    className="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-36 h-36 border-2 border-white shadow-lg"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCGJ7TqDxs9qU3ne_1cEYxywDhhJUlatUf34h05CPGt_bFSUPqTxSLGPuOEUxNTVAS0YJ2umkPUFnEc76GHYsh1jspTzX7vrKDy-Tcx2N--WxuMf4SsnToxGiUR_dxt_U2Ie45A-wVxTM8TdMiZfbpZ36ngn9_n6QcYTmRQklpd7YPoZKhSLhQlA5zZYpygLAQIY9eDWi_0Kd1Lb_IzPVJhbrAOGrxaueZKh1tToWSiDy_WTzHf13_Err1XKv0m4fHYvHw9sN0pbQc")',
-                    }}
-                  ></div>
-                  <div className="flex flex-col items-center justify-center gap-1">
-                    <p className="text-white text-3xl font-bold leading-tight tracking-tighter text-center">
-                      Sophia Bennett
-                    </p>
-                    <p className="text-gray-400 text-base font-normal leading-normal text-center">
-                      Joined in 2021
-                    </p>
-                    <p className="text-gray-400 text-base font-normal leading-normal text-center">
-                      123 reviews · 456 on watchlist
-                    </p>
+      {isAuthenticated ? (
+        <div className="layout-container flex h-full grow flex-col">
+          <main className="px-28 flex-1 py-10">
+            <div className="layout-content-container flex flex-col max-w-[960px] flex-1 mx-auto">
+              <div className="flex p-4 @container">
+                <div className="flex w-full flex-col gap-6 items-center">
+                  <div className="flex gap-6 flex-col items-center">
+                    <div
+                      className="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-36 h-36 border-2 border-white shadow-lg"
+                      style={{
+                        backgroundImage:
+                          'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCGJ7TqDxs9qU3ne_1cEYxywDhhJUlatUf34h05CPGt_bFSUPqTxSLGPuOEUxNTVAS0YJ2umkPUFnEc76GHYsh1jspTzX7vrKDy-Tcx2N--WxuMf4SsnToxGiUR_dxt_U2Ie45A-wVxTM8TdMiZfbpZ36ngn9_n6QcYTmRQklpd7YPoZKhSLhQlA5zZYpygLAQIY9eDWi_0Kd1Lb_IzPVJhbrAOGrxaueZKh1tToWSiDy_WTzHf13_Err1XKv0m4fHYvHw9sN0pbQc")',
+                      }}
+                    ></div>
+                    <div className="flex flex-col items-center justify-center gap-1">
+                      <p className="text-white text-3xl font-bold leading-tight tracking-tighter text-center">
+                        Sophia Bennett
+                      </p>
+                      <p className="text-gray-400 text-base font-normal leading-normal text-center">
+                        Joined in 2021
+                      </p>
+                      <p className="text-gray-400 text-base font-normal leading-normal text-center">
+                        123 reviews · 456 on watchlist
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-8 mt-8">
+                <div>
+                  <h2 className="text-white text-2xl font-bold leading-tight tracking-tighter px-4 pb-4">
+                    Review History
+                  </h2>
+                  <div className="px-4 @container">
+                    <div className="flex flex-col rounded-md border border-gray-800 bg-gray-900/50 overflow-hidden">
+                      <div className="grid grid-cols-2 bg-gray-900 px-4 py-3">
+                        <div className="text-left text-gray-300 text-sm font-medium">
+                          Movie
+                        </div>
+                        <div className="text-left text-gray-300 text-sm font-medium">
+                          Rating
+                        </div>
+                      </div>
+                      <div className="flex flex-col max-h-96 overflow-y-auto">
+                        {reviews.map((review, index) => (
+                          <div
+                            key={index}
+                            className="grid grid-cols-2 items-center border-t border-gray-800 px-4 py-3"
+                          >
+                            <p className="text-white text-base font-normal leading-normal">
+                              {review.movie}
+                            </p>
+                            <div className="flex items-center gap-1 text-yellow-400">
+                              {renderStars(review.rating)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="px-4">
+                  <div className="flex items-center justify-between py-4">
+                    <h2 className="text-white text-2xl font-bold leading-tight tracking-tighter">
+                      Watchlist
+                    </h2>
+                    <Link
+                      to="/watchlist"
+                      className="inline-flex items-center justify-center gap-2 rounded-md bg-transparent px-4 py-2 text-base font-semibold text-[var(--primary-color)] transition-colors hover:bg-[var(--primary-color)]/10 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/50"
+                      style={{ "--primary-color": "#ea2a33" }}
+                    >
+                      <span>View Watchlist</span>
+                      <ArrowRight className="w-4 h-4 text-[var(--primary-color)]" />
+                    </Link>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="flex flex-col gap-8 mt-8">
-              <div>
-                <h2 className="text-white text-2xl font-bold leading-tight tracking-tighter px-4 pb-4">
-                  Review History
-                </h2>
-                <div className="px-4 @container">
-                  <div className="flex flex-col rounded-md border border-gray-800 bg-gray-900/50 overflow-hidden">
-                    <div className="grid grid-cols-2 bg-gray-900 px-4 py-3">
-                      <div className="text-left text-gray-300 text-sm font-medium">
-                        Movie
-                      </div>
-                      <div className="text-left text-gray-300 text-sm font-medium">
-                        Rating
-                      </div>
-                    </div>
-                    <div className="flex flex-col max-h-96 overflow-y-auto">
-                      {reviews.map((review, index) => (
-                        <div
-                          key={index}
-                          className="grid grid-cols-2 items-center border-t border-gray-800 px-4 py-3"
-                        >
-                          <p className="text-white text-base font-normal leading-normal">
-                            {review.movie}
-                          </p>
-                          <div className="flex items-center gap-1 text-yellow-400">
-                            {renderStars(review.rating)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="px-4">
-                <div className="flex items-center justify-between py-4">
-                  <h2 className="text-white text-2xl font-bold leading-tight tracking-tighter">
-                    Watchlist
-                  </h2>
-                  <Link
-                    to="/watchlist"
-                    className="inline-flex items-center justify-center gap-2 rounded-md bg-transparent px-4 py-2 text-base font-semibold text-[var(--primary-color)] transition-colors hover:bg-[var(--primary-color)]/10 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/50"
-                    style={{ "--primary-color": "#ea2a33" }}
-                  >
-                    <span>View Watchlist</span>
-                    <i className="material-icons text-lg">arrow_forward</i>
-                  </Link>
-                </div>
+          </main>
+        </div>
+      ) : (
+        <main class="px-28 flex-1 py-10">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1 mx-auto">
+            <div class="flex flex-col gap-6 items-center rounded-lg border border-gray-800 bg-gray-900/50 p-8 text-center">
+              <h2 class="text-white text-2xl font-bold leading-tight tracking-tighter">
+                You are not logged in
+              </h2>
+              <p class="text-gray-400">
+                Log in or sign up to see your profile, review history, and
+                watchlist.
+              </p>
+              <div class="flex items-center gap-4">
+                <Link
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md bg-[var(--primary-color)] px-4 py-2 text-base font-semibold text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                  to="/login"
+                >
+                  Log In
+                </Link>
+                <Link
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md bg-gray-700 px-4 py-2 text-base font-semibold text-white transition-colors hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+                  to="/signup"
+                >
+                  Sign Up
+                </Link>
               </div>
             </div>
           </div>
         </main>
-      </div>
+      )}
     </div>
   );
 };
