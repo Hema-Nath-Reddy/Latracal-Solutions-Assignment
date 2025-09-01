@@ -18,6 +18,8 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.12",
+    "axios": "^1.11.0",
+    "https": "^1.0.0",
     "mongodb": "^6.19.0",
     "tailwindcss": "^4.1.12"
   }
