@@ -59,6 +59,50 @@ export const addToWatchlist = createAsyncThunk(
     }
   }
 );
+export const fetchWatchlist = createAsyncThunk(
+  "movies/fetchWatchlist",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/users/${userId}/watchlist`
+      );
+      return response.data.watchlist;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// New thunk to fetch details for each movie in the watchlist
+export const fetchWatchlistMovies = createAsyncThunk(
+  "movies/fetchWatchlistMovies",
+  async (movieIds, { rejectWithValue }) => {
+    try {
+      // Use Promise.all to fetch all movie details in parallel
+      const movieDetailsPromises = movieIds.map((id) =>
+        axios.get(`http://localhost:3001/movies/${id}`)
+      );
+      const responses = await Promise.all(movieDetailsPromises);
+      return responses.map((res) => res.data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const removeFromWatchlist = createAsyncThunk(
+  "movies/removeFromWatchlist",
+  async ({ userId, movieId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3001/users/${userId}/watchlist/${movieId}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 export const submitReview = createAsyncThunk(
   "movies/submitReview",
@@ -124,7 +168,9 @@ const movieSlice = createSlice({
   initialState: {
     data: [],
     selectedMovie: null,
-    cast: [], // A new state for cast data
+    cast: [],
+    watchlist: [],
+    watchlistMovies: [], // A new state for cast data
     status: "idle",
     error: null,
   },
@@ -170,10 +216,27 @@ const movieSlice = createSlice({
         state.cast = [];
       })
       .addCase(addToWatchlist.fulfilled, (state, action) => {
-        console.log("Movie added to watchlist:", action.payload);
+        state.watchlist = action.payload.watchlist;
       })
       .addCase(addToWatchlist.rejected, (state, action) => {
         console.error("Failed to add movie to watchlist:", action.payload);
+      })
+      .addCase(fetchWatchlist.fulfilled, (state, action) => {
+        state.watchlist = action.payload;
+      })
+      .addCase(fetchWatchlistMovies.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchWatchlistMovies.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.watchlistMovies = action.payload; // Store the movie details
+      })
+      .addCase(fetchWatchlistMovies.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(removeFromWatchlist.fulfilled, (state, action) => {
+        state.watchlist = action.payload.watchlist; // Update watchlist after removing
       })
       .addCase(submitReview.pending, (state) => {
         state.status = "loading";

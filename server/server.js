@@ -4,16 +4,17 @@ import {
   ServerApiVersion,
   ObjectId,
 } from "mongodb";
+
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import bcrypt from "bcrypt";
-
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import https from "https";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import axios from "axios";
+
 dotenv.config();
 
 cloudinary.config({
@@ -243,7 +244,7 @@ app.post("/movies/:id/review", async (req, res) => {
   }
 });
 
-//API Integrated
+//API Integrated partially
 //GET /users/:id - Retrieve user profile and review history
 app.get("/users/:id", async (req, res) => {
   try {
@@ -294,36 +295,31 @@ app.put("/users/:id", async (req, res) => {
   }
 });
 
-//GET /users/:id/watchlist - Retrieve user's watchlist
+//API Integrated
+// GET /users/:id/watchlist - Retrieve a user's watchlist
 app.get("/users/:id/watchlist", async (req, res) => {
   try {
     const { id } = req.params;
-
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
-
     const user = await db
       .collection("users")
-      .findOne(
-        { _id: new ObjectId(id) },
-        { projection: { watchlist: 1, _id: 0 } }
-      );
-
+      .findOne({ _id: new ObjectId(id) });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    res.status(200).json(user.watchlist || []);
+    return res.status(200).json({ watchlist: user.watchlist || [] });
   } catch (error) {
-    res.status(500).json({
-      message: "Error fetching user's watchlist",
+    return res.status(500).json({
+      message: "Error fetching watchlist",
       error: error.message,
     });
   }
 });
 
-//POST /users/:id/watchlist - Add movie to watchlist
+//API Integrated
+// POST /users/:id/watchlist - Add movie to watchlist
 app.post("/users/:id/watchlist", async (req, res) => {
   try {
     const { id } = req.params;
@@ -331,59 +327,70 @@ app.post("/users/:id/watchlist", async (req, res) => {
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
-    if (!ObjectId.isValid(movieId)) {
+    const movieIdNum = parseInt(movieId, 10);
+    if (Number.isNaN(movieIdNum)) {
       return res.status(400).json({ message: "Invalid movie ID" });
     }
-    const user = await db.collection("users").findOneAndUpdate(
-      {
-        _id: new ObjectId(id),
-      },
-      {
-        $addToSet: { watchlist: new ObjectId(movieId) },
-      }
-    );
-    if (!user) {
+    const result = await db
+      .collection("users")
+      .findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $addToSet: { watchlist: movieIdNum } },
+        { returnDocument: "after" }
+      );
+    if (!result.value) {
       return res.status(404).json({ message: "User not found" });
     }
-    return res.status(200).json(user.watchlist);
+    return res.status(200).json({ watchlist: result.value.watchlist || [] });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error adding movie to watchlist",
       error: error.message,
     });
   }
 });
 
-//DELETE /users/:id/watchlist/:movieId - Remove movie from watchlist
-app.delete("/user/:id/watchlist", async (req, res) => {
+//API Integrated
+// DELETE /users/:id/watchlist/:movieId - Remove movie from watchlist
+app.delete("/users/:id/watchlist/:movieId", async (req, res) => {
   try {
-    const { id } = req.params;
-    const { movieId } = req.body;
+    const { id, movieId } = req.params;
+
+    // Log the ID being received to verify it matches your DB
+    console.log("Received userId:", id);
+
+    // Validate the ID format (your code already does this)
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
-    if (!ObjectId.isValid(movieId)) {
-      return res.status(400).json({ message: "Invalid movie ID" });
-    }
-    const response = await db.collection("users").findOneAndUpdate(
-      {
-        _id: new ObjectId(id),
-      },
-      {
-        $pull: { watchlist: new ObjectId(movieId) },
-      }
+
+    const userIdAsObjectId = new ObjectId(id);
+    const movieIdNum = parseInt(movieId, 10);
+
+    // Log the result of the query to confirm if a user was found
+    const result = await db.collection("users").findOneAndUpdate(
+      { _id: userIdAsObjectId }, // This is the query filter
+      { $pull: { watchlist: movieIdNum } },
+      { returnDocument: "after" }
     );
-    if (!response) {
-      return res.status(404).json({ message: "Movie not found in watchlist" });
+
+    // Log the result of the database operation
+    console.log("Database findOneAndUpdate result:", result.value);
+
+    if (!result.value) {
+      console.log(result.value);
+      return res.status(404).json({ message: "User not found" });
     }
-    return res.status(200).json({ message: "Movie removed from watchlist" });
+
+    return res.status(200).json({ watchlist: result.value.watchlist || [] });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error removing movie from watchlist",
       error: error.message,
     });
   }
 });
+
 //API Integrated
 app.post("/signUp", upload.single("profilePic"), async (req, res) => {
   try {
@@ -423,7 +430,6 @@ app.post("/signUp", upload.single("profilePic"), async (req, res) => {
   }
 });
 
-
 //API Integrated
 app.post("/logIn", async (req, res) => {
   try {
@@ -445,8 +451,8 @@ app.post("/logIn", async (req, res) => {
       email: user.email,
       name: user.name,
       profile: user.profilePicture,
-      joinDate : user.joinDate,
-      username: user.username
+      joinDate: user.joinDate,
+      username: user.username,
       // Add other non-sensitive user fields you need
       // DON'T send password or other sensitive data
     };
