@@ -46,19 +46,15 @@ app.get("/movies", async (req, res) => {
   try {
     const { query, genre, page = 1 } = req.query;
 
-    // Use only the API key method (remove Bearer token to avoid conflicts)
     let tmdbUrl;
 
     if (query) {
-      // 🔍 Use TMDB search endpoint when user provides a query
       tmdbUrl = `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(
         query
       )}&page=${page}&include_adult=false`;
     } else {
-      // 🎬 Default discover endpoint
       tmdbUrl = `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&include_adult=false&include_video=false&language=en-US&page=${page}&sort_by=popularity.desc`;
 
-      // Optionally add genre filter if provided
       if (genre) {
         tmdbUrl += `&with_genres=${genre}`;
       }
@@ -74,9 +70,9 @@ app.get("/movies", async (req, res) => {
     const tmdbMovies = response.data.results;
 
     if (tmdbMovies && tmdbMovies.length > 0) {
-      return res.status(200).json(tmdbMovies); // Add return to prevent further execution
+      return res.status(200).json(tmdbMovies);
     } else {
-      return res.status(404).json({ message: "No movies found" }); // Add return
+      return res.status(404).json({ message: "No movies found" });
     }
   } catch (error) {
     console.log("Error details:", {
@@ -86,7 +82,6 @@ app.get("/movies", async (req, res) => {
       message: error.message,
     });
 
-    // Only send error response if no response has been sent yet
     if (!res.headersSent) {
       return res.status(500).json({
         message: "Error fetching movies from TMDB",
