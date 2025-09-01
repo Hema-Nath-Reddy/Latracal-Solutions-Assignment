@@ -29,7 +29,7 @@ Follow these steps to get the project up and running on your local machine.
 1. Clone the Repository
 Bash
 
-git clone https://github.com/your-username/your-repository-name.git
+git clone https://github.com/Hema-Nath-Reddy/Latracal-Solutions-Assignment
 cd your-repository-name
 2. Backend Setup
 Navigate to the server directory, install the dependencies, and start the server.
@@ -54,6 +54,8 @@ The application requires environment variables for both the backend and frontend
 Backend (server/.env)
 Create a .env file in your server directory with the following variables:
 
+Bash
+
 MONGODB_URI=your_mongodb_connection_string
 TMDB_KEY=your_tmdb_api_key
 TMDB_ACCESS_TOKEN=your_tmdb_v4_access_token
@@ -62,6 +64,8 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 Frontend (.env)
 Create a .env file in your project's root directory:
+
+Bash
 
 VITE_TMDB_API_KEY=your_tmdb_api_key
 VITE_TMDB_ACCESS_TOKEN=your_tmdb_v4_access_token
