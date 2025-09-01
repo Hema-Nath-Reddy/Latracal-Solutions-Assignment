@@ -19,22 +19,14 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
 
+  // Regex for validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
-
-  useEffect(() => {
-    if (status === "succeeded" && !error) {
-      toast.success("Account created successfully! Please log in.");
-      navigate("/login");
-    }
-    if (status === "failed") {
-      toast.error(`Error: ${error?.message || "Failed to sign up."}`);
-    }
-  }, [status, error, navigate]);
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/; // Minimum 8 characters, at least one letter and one number
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Frontend validation with toasts
     if (!username || !email || !password || !confirmPassword) {
       toast.error("All fields are required.");
       return;

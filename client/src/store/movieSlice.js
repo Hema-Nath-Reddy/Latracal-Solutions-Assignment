@@ -189,7 +189,12 @@ const movieSlice = createSlice({
     status: "idle",
     error: null,
   },
-  reducers: {},
+  reducers: {
+    resetStatus: (state) => {
+      state.status = "idle";
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Cases for fetching all movies
