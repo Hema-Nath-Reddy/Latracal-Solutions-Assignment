@@ -17,6 +17,8 @@
     "nodemon": "^3.1.10"
   },
   "dependencies": {
-    "mongodb": "^6.19.0"
+    "@tailwindcss/vite": "^4.1.12",
+    "mongodb": "^6.19.0",
+    "tailwindcss": "^4.1.12"
   }
 }

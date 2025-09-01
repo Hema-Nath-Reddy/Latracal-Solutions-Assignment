@@ -18,7 +18,7 @@ app.use(cors(corsOptions));
 let db;
 async function connectToDB() {
   try {
-    const uri = `mongodb+srv://hemanathreddyyeruva_db_user:AT28owsEuLuhgEKG@cluster0.05ss5ar.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+    const uri = `${process.env.MONGODB_URI}`;
     const client = new MongoClient(uri, {
       serverApi: {
         version: ServerApiVersion.v1,
