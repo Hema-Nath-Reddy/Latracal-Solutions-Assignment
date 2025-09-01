@@ -1,17 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Hooks/useAuth";
 import { Bookmark } from "lucide-react";
+
 const Navbar = () => {
   const primaryColor = "#ea2a33";
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  // Access the user object along with isAuthenticated and logout
+  const { isAuthenticated, logout, user } = useAuth();
+
   return (
     <header className="w-full flex items-center justify-between bg-black whitespace-nowrap border-b border-gray-800 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-[1000] shadow-md">
       <div className="flex items-center gap-6 lg:gap-10">
         {/* Logo */}
         <button
-          className="cursor-pointer
- flex items-center gap-2 text-white"
+          className="cursor-pointer flex items-center gap-2 text-white"
           onClick={() => {
             navigate("/");
           }}
@@ -47,46 +49,12 @@ const Navbar = () => {
           >
             Movies
           </Link>
-
-          {/*  {["Home", "Movies", "TV Shows", "Genres"].map((item) => (
-            <a
-              key={item}
-              className="text-gray-300 hover:text-white text-sm font-medium leading-normal transition-colors"
-              href="#"
-            >
-              {item}
-            </a>
-          ))} */}
         </nav>
       </div>
 
-      {/* Right Side (Search + Icons + Avatar) */}
       <div className="flex items-center gap-4">
-        {/* Search */}
-        {/*   <label className="hidden sm:flex flex-col min-w-40 !h-10 max-w-64">
-          <div className="flex w-full flex-1 items-stretch rounded-md h-full">
-            <div className="text-gray-400 flex border-none bg-gray-800 items-center justify-center pl-3 rounded-l-md border-r-0">
-              <svg
-                fill="currentColor"
-                height="20px"
-                viewBox="0 0 256 256"
-                width="20px"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z" />
-              </svg>
-            </div>
-            <input
-              className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-md text-white focus:outline-0 focus:ring-0 border-none bg-gray-800 focus:border-none h-full placeholder:text-gray-400 px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal"
-              placeholder="Search"
-            />
-          </div>
-        </label> */}
-
-        {/* Bookmark Button */}
         {isAuthenticated ? (
           <>
-            {" "}
             <button
               onClick={() => {
                 navigate("/watchlist");
@@ -102,8 +70,11 @@ const Navbar = () => {
               }}
               className="cursor-pointer bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
               style={{
-                backgroundImage:
-                  'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDRwvFniIOmhzeb-BKlaHDUMCqt_uEp5DNKC8oQPDFKXwRQOkqSkzhGnBimMpXWBzWo6A8fzScBEmIeD-21dHZTZEFOsjNko5Fo_ziwxIchzDNp9i8-_x6pycarwtdN_UPQxKxWRVGj7ySIDI4YYuGW3ngh8OVByqCF3S4XgRhdB1jNq_51L3M4urFJb1eEGArFNgNjRTZPYXQ_5QrR2fkGPzDopAAD6brgwyS05TMvJQXC_NfoS4e8P7Og1u0qS-9h8ZzTCSkASJg")',
+                // Use optional chaining and a fallback URL for robustness
+                backgroundImage: `url("${
+                  user?.profile ||
+                  "https://lh3.googleusercontent.com/aida-public/AB6AXuDRwvFniIOmhzeb-BKlaHDUMCqt_uEp5DNKC8oQPDFKXwRQOkqSkzhGnBimMpXWBzWo6A8fzScBEmIeD-21dHZTZEFOsjNko5Fo_ziwxIchzDNp9i8-_x6pycarwtdN_UPQxKxWRVGj7ySIDI4YYuGW3ngh8OVByqCF3S4XgRhdB1jNq_51L3M4urFJb1eEGArFNgNjRTZPYXQ_5QrR2fkGPzDopAAD6brgwyS05TMvJQXC_NfoS4e8P7Og1u0qS-9h8ZzTCSkASJg"
+                }")`,
               }}
             />
             {/* Add a logout button */}

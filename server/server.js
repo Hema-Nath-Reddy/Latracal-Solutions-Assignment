@@ -40,6 +40,7 @@ app.use(express.json());
 const corsOptions = {
   origin: "http://localhost:5173",
 };
+
 app.use(cors(corsOptions));
 let db;
 
@@ -383,6 +384,7 @@ app.delete("/user/:id/watchlist", async (req, res) => {
     });
   }
 });
+//API Integrated
 app.post("/signUp", upload.single("profilePic"), async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -421,6 +423,8 @@ app.post("/signUp", upload.single("profilePic"), async (req, res) => {
   }
 });
 
+
+//API Integrated
 app.post("/logIn", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -441,6 +445,8 @@ app.post("/logIn", async (req, res) => {
       email: user.email,
       name: user.name,
       profile: user.profilePicture,
+      joinDate : user.joinDate,
+      username: user.username
       // Add other non-sensitive user fields you need
       // DON'T send password or other sensitive data
     };
