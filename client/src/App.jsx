@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Layout from "./Layout";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
@@ -9,7 +10,7 @@ import WatchList from "./pages/WatchList";
 import MovieDetail from "./pages/MovieDetail";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
-import SignUp from "./pages/Signup";
+import SignUp from "./pages/SignUp";
 import { AuthProvider, ProtectedRoute } from "./Hooks/useAuth";
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
       <AuthProvider>
         <RouterProvider router={router} />
       </AuthProvider>
+      <Toaster />
     </div>
   );
 }

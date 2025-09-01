@@ -3,13 +3,13 @@ import { ImageUp } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signUp } from "../store/movieSlice";
+import toast from "react-hot-toast";
 
 const SignUp = () => {
   const primaryColor = "#ea2a33";
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Get Redux state for loading and errors
   const status = useSelector((state) => state.movies.status);
   const error = useSelector((state) => state.movies.error);
 
@@ -19,32 +19,53 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
 
-  // Redirect to the login page on successful sign-up
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
+
   useEffect(() => {
     if (status === "succeeded" && !error) {
+      toast.success("Account created successfully! Please log in.");
       navigate("/login");
+    }
+    if (status === "failed") {
+      toast.error(`Error: ${error?.message || "Failed to sign up."}`);
     }
   }, [status, error, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+
+    if (!username || !email || !password || !confirmPassword) {
+      toast.error("All fields are required.");
       return;
     }
 
-    // Create a FormData object to handle the file upload
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      toast.error(
+        "Password must be at least 8 characters long and contain a letter and a number."
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("username", username);
     formData.append("email", email);
     formData.append("password", password);
-    
-    // Only append the file if one was selected
+
     if (profilePicture) {
-        formData.append("profilePic", profilePicture);
+      formData.append("profilePic", profilePicture);
     }
-    
-    // Dispatch the signUp thunk with the FormData object
+
     dispatch(signUp(formData));
   };
 
@@ -61,11 +82,6 @@ const SignUp = () => {
                 Create an account
               </h2>
             </div>
-            {status === "failed" && (
-                <div className="text-red-500 text-center p-4 bg-red-900/20 rounded-md">
-                    Error: {error ? error.status_message : "Failed to sign up."}
-                </div>
-            )}
             <form onSubmit={handleSubmit} className="mt-8 space-y-6">
               <div className="rounded-md shadow-sm -space-y-px">
                 <div>
@@ -152,7 +168,7 @@ const SignUp = () => {
                         <input
                           className="sr-only"
                           id="file-upload"
-                          name="profilePic" // <-- Changed name attribute here
+                          name="profilePic"
                           type="file"
                           onChange={(e) => setProfilePicture(e.target.files[0])}
                         />
