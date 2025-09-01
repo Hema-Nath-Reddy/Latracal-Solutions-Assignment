@@ -33,7 +33,7 @@ function App() {
         {
           path: "/profile",
           element: <Profile />,
-        } /* ,
+        },
         {
           path: "/login",
           element: <Login />,
@@ -41,11 +41,15 @@ function App() {
         {
           path: "/signup",
           element: <SignUp />,
-        },
+        } /* ,
+        
+        
         {
           path: "/movieDetail",
           element: <MovieDetail />,
         } */,
+        ,
+        ,
       ],
     },
   ];
