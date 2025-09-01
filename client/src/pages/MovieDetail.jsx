@@ -1,22 +1,47 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMovieDetail, fetchMovieCast } from "../store/movieSlice";
+import {
+  fetchMovieDetail,
+  fetchMovieCast,
+  submitReview,
+} from "../store/movieSlice";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../Hooks/useAuth";
 
 const MovieDetail = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
+  const { isAuthenticated, user } = useAuth();
   const movie = useSelector((state) => state.movies.selectedMovie);
-  const cast = useSelector((state) => state.movies.cast); // Access the new cast state
+  const cast = useSelector((state) => state.movies.cast);
   const status = useSelector((state) => state.movies.status);
   const error = useSelector((state) => state.movies.error);
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
 
-  // Dispatch both thunks when the component mounts
   useEffect(() => {
     dispatch(fetchMovieDetail(id));
-    dispatch(fetchMovieCast(id)); // Dispatch the new cast thunk
+    dispatch(fetchMovieCast(id));
   }, [dispatch, id]);
+
+  const handleSubmitReview = (e) => {
+    e.preventDefault();
+    if (rating === 0 || reviewText.trim() === "") {
+      alert("Please provide a rating and a review text.");
+      return;
+    }
+    dispatch(
+      submitReview({
+        movieId: id,
+        userId: user.id, // Assuming user.id is the current user's ID
+        rating,
+        reviewText,
+      })
+    );
+    setRating(0);
+    setReviewText("");
+  };
 
   const primaryColor = "#ea2a33";
 
@@ -34,18 +59,21 @@ const MovieDetail = () => {
     );
   }
 
-  const renderStars = (rating) => {
+  const renderStars = (starRating, isClickable = false) => {
     const stars = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 1; i <= 5; i++) {
       stars.push(
         <svg
           key={i}
-          className={`h-5 w-5 ${i < rating ? "text-red-500" : "text-gray-600"}`}
+          className={`h-5 w-5 ${
+            i <= starRating ? "text-red-500" : "text-gray-600"
+          } ${isClickable ? "cursor-pointer" : ""}`}
           fill="currentColor"
           viewBox="0 0 256 256"
           width="20px"
           height="20px"
           xmlns="http://www.w3.org/2000/svg"
+          onClick={isClickable ? () => setRating(i) : undefined}
         >
           <path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"></path>
         </svg>
@@ -161,7 +189,54 @@ const MovieDetail = () => {
               <h2 className="text-2xl font-bold text-white">
                 Submit Your Review
               </h2>
-              {/* Form to submit a new review */}
+              {isAuthenticated ? (
+                <div className="mt-6 rounded-lg border border-gray-800 bg-gray-900 p-6">
+                  <form onSubmit={handleSubmitReview}>
+                    <div className="space-y-6">
+                      <div>
+                        <label
+                          className="text-base font-medium text-white"
+                          htmlFor="rating"
+                        >
+                          Your Rating
+                        </label>
+                        <div className="mt-2 flex items-center gap-1 text-gray-500">
+                          {renderStars(rating, true)}
+                        </div>
+                      </div>
+                      <div>
+                        <label
+                          className="text-base font-medium text-white"
+                          htmlFor="review"
+                        >
+                          Your Review
+                        </label>
+                        <textarea
+                          className="mt-2 block w-full rounded-md border-gray-700 bg-gray-800 text-white placeholder-gray-400 focus:border-red-600 focus:ring-red-600 sm:text-sm"
+                          id="review"
+                          name="review"
+                          placeholder="Share your thoughts on the movie..."
+                          rows="4"
+                          value={reviewText}
+                          onChange={(e) => setReviewText(e.target.value)}
+                        ></textarea>
+                      </div>
+                    </div>
+                    <div className="mt-8 flex justify-end">
+                      <button
+                        className="inline-flex items-center justify-center gap-2 rounded-md bg-red-600 px-6 py-3 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-100"
+                        type="submit"
+                      >
+                        Submit Review
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ) : (
+                <div className="mt-6 text-center text-gray-400">
+                  Please log in to submit a review.
+                </div>
+              )}
             </section>
           </div>
         </main>

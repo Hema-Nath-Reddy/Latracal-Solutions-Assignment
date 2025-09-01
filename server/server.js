@@ -4,6 +4,11 @@ import {
   ServerApiVersion,
   ObjectId,
 } from "mongodb";
+import { v2 as cloudinary } from "cloudinary";
+import multer from "multer";
+import bcrypt from "bcrypt";
+
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 import https from "https";
 import express from "express";
 import cors from "cors";
@@ -11,6 +16,22 @@ import dotenv from "dotenv";
 import axios from "axios";
 dotenv.config();
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "cineview_profile_pics", // A folder in your Cloudinary account
+    allowed_formats: ["jpg", "png", "jpeg"],
+    transformation: [{ width: 250, height: 250, crop: "fill" }], // Optional transformations
+  },
+});
+
+const upload = multer({ storage: storage });
 const TMDB_API_KEY = process.env.TMDB_KEY;
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -41,6 +62,7 @@ async function connectToDB() {
     console.error("Error connecting to MongoDB:", error);
   }
 }
+//API Integrated
 //GET /movies - Retrieve all movies (with pagination and filtering)
 app.get("/movies", async (req, res) => {
   try {
@@ -91,6 +113,7 @@ app.get("/movies", async (req, res) => {
   }
 });
 
+//API Integrated
 //GET /movies/:id - Retrieve a specific movie with reviews
 app.get("/movies/:id", async (req, res) => {
   try {
@@ -119,6 +142,7 @@ app.get("/movies/:id", async (req, res) => {
   }
 });
 
+//API Integrated
 app.get("/movies/cast/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -200,10 +224,10 @@ app.get("/movies/:id/reviews", async (req, res) => {
 app.post("/movies/:id/review", async (req, res) => {
   try {
     const { id } = req.params;
-    const { review } = req.body;
+    const { reviewText, name, userId, rating } = req.body;
     const response = await db
       .collection("reviews")
-      .insertOne({ movieId: id, review });
+      .insertOne({ movieId: id, reviewText, name, userId, rating });
     if (response) {
       const movieId = response.insertedId;
       res.status(201).json({ message: "Review added successfully", movieId });
@@ -355,6 +379,80 @@ app.delete("/user/:id/watchlist", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error removing movie from watchlist",
+      error: error.message,
+    });
+  }
+});
+app.post("/signUp", upload.single("profilePic"), async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Check for password hashing (best practice)
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    let profilePictureUrl = "default_profile_pic_url"; // Default URL if no file is uploaded
+
+    // If a file was uploaded, use the secure URL from the Cloudinary response
+    if (req.file) {
+      profilePictureUrl = req.file.path;
+    }
+
+    const user = {
+      username,
+      email,
+      password: hashedPassword,
+      profilePicture: profilePictureUrl,
+      joinDate: new Date(),
+    };
+
+    const result = await db.collection("users").insertOne(user);
+
+    // Send back a success response
+    res.status(201).json({
+      _id: result.insertedId,
+      username: user.username,
+      profilePicture: user.profilePicture,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error signing up",
+      error: error.message,
+    });
+  }
+});
+
+app.post("/logIn", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await db.collection("users").findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Remove sensitive data before sending
+    const userResponse = {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      profile: user.profilePicture,
+      // Add other non-sensitive user fields you need
+      // DON'T send password or other sensitive data
+    };
+
+    // Return user object along with success message
+    res.status(200).json({
+      message: "Login successful",
+      user: userResponse, // Add this line
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error logging in",
       error: error.message,
     });
   }

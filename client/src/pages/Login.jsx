@@ -1,22 +1,29 @@
-import { React, useState } from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../Hooks/useAuth";
+import { useAuth } from "../Hooks/useAuth"; // Assuming useAuth is here
+
 const Login = () => {
   const primaryColor = "#ea2a33";
 
+  // Get authentication state and login function from the custom hook
   const { isAuthenticated, loading, login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  // Redirect to the profile page on successful authentication
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/profile", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
+  // Handler for the form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Use the login function from the useAuth hook
+    // The useAuth hook will handle dispatching the Redux thunk
     login(email, password);
   };
 
@@ -45,7 +52,7 @@ const Login = () => {
                 Sign in to continue your movie journey
               </p>
             </div>
-            <div className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="sr-only" htmlFor="email">
                   Email address
@@ -68,7 +75,7 @@ const Login = () => {
                   Password
                 </label>
                 <input
-                  autocomplete="current-password"
+                  autoComplete="current-password"
                   className="relative block w-full appearance-none rounded-md border border-gray-700 bg-gray-800/50 px-3 py-3 text-white placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-[var(--primary-color)] sm:text-sm"
                   style={{ "--primary-color": primaryColor }}
                   id="password"
@@ -96,12 +103,12 @@ const Login = () => {
                   className="group relative flex w-full justify-center rounded-md border border-transparent bg-[var(--primary-color)] py-3 px-4 text-sm font-semibold text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors"
                   style={{ "--primary-color": primaryColor }}
                   disabled={loading}
-                  onClick={handleSubmit}
+                  type="submit"
                 >
                   {loading ? "Logging in..." : "Login"}
                 </button>
               </div>
-            </div>
+            </form>
             <p className="mt-6 text-center text-sm text-gray-400">
               Don't have an account?
               <Link

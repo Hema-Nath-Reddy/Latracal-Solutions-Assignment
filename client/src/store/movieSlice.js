@@ -60,6 +60,65 @@ export const addToWatchlist = createAsyncThunk(
   }
 );
 
+export const submitReview = createAsyncThunk(
+  "movies/submitReview",
+  async ({ movieId, userId, rating, reviewText }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3001/movies/${movieId}/review`,
+        { rating, reviewText, userId },
+        { headers: { "x-user-id": userId } } // Pass user ID for authentication
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// New thunk in your movieSlice.js
+export const signUp = createAsyncThunk(
+  "movies/signUp",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/signUp",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Important for file uploads
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+export const logIn = createAsyncThunk(
+  "movies/logIn",
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post("http://localhost:3001/logIn", {
+        email,
+        password,
+      });
+
+      // Only store in localStorage if user data exists
+      if (response.data.user) {
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+      }
+
+      return response.data;
+    } catch (error) {
+      // Clear localStorage on login failure
+      localStorage.removeItem("user");
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const movieSlice = createSlice({
   name: "movies",
   initialState: {
@@ -115,6 +174,42 @@ const movieSlice = createSlice({
       })
       .addCase(addToWatchlist.rejected, (state, action) => {
         console.error("Failed to add movie to watchlist:", action.payload);
+      })
+      .addCase(submitReview.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(submitReview.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        // Optionally, you could add the new review to the selectedMovie object here
+        console.log("Review submitted successfully:", action.payload);
+      })
+      .addCase(submitReview.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(signUp.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(signUp.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        // Optionally, you could add the new review to the selectedMovie object here
+        console.log("Signed up succesfully:", action.payload);
+      })
+      .addCase(signUp.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(logIn.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(logIn.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        // Optionally, you could add the new review to the selectedMovie object here
+        console.log("logged in succesfully:", action.payload);
+      })
+      .addCase(logIn.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });

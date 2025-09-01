@@ -1,24 +1,59 @@
-import { React, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ImageUp } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { signUp } from "../store/movieSlice";
+
 const SignUp = () => {
   const primaryColor = "#ea2a33";
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Get Redux state for loading and errors
+  const status = useSelector((state) => state.movies.status);
+  const error = useSelector((state) => state.movies.error);
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
+
+  // Redirect to the login page on successful sign-up
+  useEffect(() => {
+    if (status === "succeeded" && !error) {
+      navigate("/login");
+    }
+  }, [status, error, navigate]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Sign up function has been called.");
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    // Create a FormData object to handle the file upload
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("email", email);
+    formData.append("password", password);
+    
+    // Only append the file if one was selected
+    if (profilePicture) {
+        formData.append("profilePic", profilePicture);
+    }
+    
+    // Dispatch the signUp thunk with the FormData object
+    dispatch(signUp(formData));
   };
+
   return (
     <div
       className="relative flex size-full min-h-screen flex-col bg-[#1a1a1a] dark group/design-root overflow-x-hidden"
       style={{ fontFamily: '"Plus Jakarta Sans", "Noto Sans", sans-serif' }}
     >
       <div className="layout-container flex h-full grow flex-col">
-        {/* Main content */}
         <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
           <div className="w-full max-w-md space-y-8 bg-[#222222] p-8 rounded-lg shadow-lg">
             <div>
@@ -26,7 +61,12 @@ const SignUp = () => {
                 Create an account
               </h2>
             </div>
-            <div className="mt-8 space-y-6">
+            {status === "failed" && (
+                <div className="text-red-500 text-center p-4 bg-red-900/20 rounded-md">
+                    Error: {error ? error.status_message : "Failed to sign up."}
+                </div>
+            )}
+            <form onSubmit={handleSubmit} className="mt-8 space-y-6">
               <div className="rounded-md shadow-sm -space-y-px">
                 <div>
                   <label className="sr-only" htmlFor="username">
@@ -49,7 +89,7 @@ const SignUp = () => {
                     Email address
                   </label>
                   <input
-                    autocomplete="email"
+                    autoComplete="email"
                     className="relative block w-full appearance-none rounded-md border border-gray-700 bg-gray-800/50 px-3 py-3 text-white placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-[var(--primary-color)] sm:text-sm"
                     style={{ "--primary-color": primaryColor }}
                     id="email-address"
@@ -66,7 +106,7 @@ const SignUp = () => {
                     Password
                   </label>
                   <input
-                    autocomplete="current-password"
+                    autoComplete="new-password"
                     className="relative block w-full appearance-none rounded-md border border-gray-700 bg-gray-800/50 px-3 py-3 text-white placeholder-gray-500 focus:z-10 focus:border-[var(--primary-color)] focus:outline-none focus:ring-[var(--primary-color)] sm:text-sm"
                     style={{ "--primary-color": primaryColor }}
                     id="password"
@@ -97,8 +137,7 @@ const SignUp = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-400">
-                  {" "}
-                  Profile Picture{" "}
+                  Profile Picture
                 </label>
                 <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md">
                   <div className="space-y-1 items-center">
@@ -113,7 +152,7 @@ const SignUp = () => {
                         <input
                           className="sr-only"
                           id="file-upload"
-                          name="file-upload"
+                          name="profilePic" // <-- Changed name attribute here
                           type="file"
                           onChange={(e) => setProfilePicture(e.target.files[0])}
                         />
@@ -128,14 +167,15 @@ const SignUp = () => {
               </div>
               <div>
                 <button
-                  onClick={handleSubmit}
-                  className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--primary-color)] hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-[var(--primary-color)]"
+                  type="submit"
+                  className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[var(--primary-color)] hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-[var(--primary-color)] disabled:opacity-50"
                   style={{ "--primary-color": primaryColor }}
+                  disabled={status === "loading"}
                 >
-                  Sign Up
+                  {status === "loading" ? "Signing Up..." : "Sign Up"}
                 </button>
               </div>
-            </div>
+            </form>
             <div className="text-center">
               <p className="text-sm text-gray-400">
                 Already have an account?
@@ -144,8 +184,7 @@ const SignUp = () => {
                   className="font-medium text-[var(--primary-color)] hover:text-red-500"
                   style={{ "--primary-color": primaryColor }}
                 >
-                  {" "}
-                  Log In{" "}
+                  Log In
                 </Link>
               </p>
             </div>
