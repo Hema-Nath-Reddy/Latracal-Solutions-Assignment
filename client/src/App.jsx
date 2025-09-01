@@ -4,6 +4,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./Layout";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
+import Movies from "./pages/Movies";
+import WatchList from "./pages/WatchList";
 
 function App() {
   const routes = [
@@ -15,7 +17,13 @@ function App() {
         {
           path: "/",
           element: <Home />,
-        },
+        },{
+          path:'/movies',
+          element: <Movies />,
+        },{
+          path:'/watchlist',
+          element: <WatchList />,
+        }
       ],
     },
   ];

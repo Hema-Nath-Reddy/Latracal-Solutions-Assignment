@@ -1,8 +1,9 @@
 import React from 'react';
-
+import { Link,useNavigate } from 'react-router-dom';
+    
 const Navbar = () => {
   const primaryColor = '#ea2a33';
-
+  const navigate = useNavigate();
   return (
     <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-800 px-4 sm:px-6 lg:px-8 py-4">
       <div className="flex items-center gap-6 lg:gap-10">
@@ -24,7 +25,11 @@ const Navbar = () => {
 
         {/* Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          {["Home", "Movies", "TV Shows", "Genres"].map((item) => (
+            <Link to="/" className="text-gray-300 hover:text-white text-sm font-medium leading-normal transition-colors">Home</Link>
+            <Link to="/movies" className="text-gray-300 hover:text-white text-sm font-medium leading-normal transition-colors">Movies</Link>
+            
+            
+         {/*  {["Home", "Movies", "TV Shows", "Genres"].map((item) => (
             <a
               key={item}
               className="text-gray-300 hover:text-white text-sm font-medium leading-normal transition-colors"
@@ -32,14 +37,14 @@ const Navbar = () => {
             >
               {item}
             </a>
-          ))}
+          ))} */}
         </nav>
       </div>
 
       {/* Right Side (Search + Icons + Avatar) */}
       <div className="flex items-center gap-4">
         {/* Search */}
-        <label className="hidden sm:flex flex-col min-w-40 !h-10 max-w-64">
+      {/*   <label className="hidden sm:flex flex-col min-w-40 !h-10 max-w-64">
           <div className="flex w-full flex-1 items-stretch rounded-md h-full">
             <div className="text-gray-400 flex border-none bg-gray-800 items-center justify-center pl-3 rounded-l-md border-r-0">
               <svg
@@ -57,10 +62,14 @@ const Navbar = () => {
               placeholder="Search"
             />
           </div>
-        </label>
+        </label> */}
 
         {/* Bookmark Button */}
-        <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-md h-10 w-10 bg-gray-800 hover:bg-gray-700 text-white transition-colors">
+        <button
+            onClick={()=>{
+                navigate('/watchlist');
+            }}
+        className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-md h-10 w-10 bg-gray-800 hover:bg-gray-700 text-white transition-colors">
           <svg
             fill="currentColor"
             height="20px"
