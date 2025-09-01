@@ -1,12 +1,14 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMovies } from "../store/movieSlice";
+import { fetchMovies, addToWatchlist } from "../store/movieSlice";
+import { useAuth } from "../Hooks/useAuth"; // Assuming useAuth is here
 
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { isAuthenticated, user } = useAuth(); // Use the auth hook
   const movieData = useSelector((state) => state.movies.data);
   const status = useSelector((state) => state.movies.status);
   const error = useSelector((state) => state.movies.error);
@@ -16,14 +18,14 @@ const Home = () => {
     dispatch(fetchMovies({ page: 1 }));
   }, [dispatch]);
 
-  useEffect(() => {
-    if (status === "succeeded" && movieData) {
-      console.log(
-        "Movie data successfully fetched and is available:",
-        movieData
-      );
+  const handleAddToWatchlist = (e, movieId) => {
+    e.stopPropagation(); // Prevents the card's onClick from firing
+    if (isAuthenticated && user) {
+      dispatch(addToWatchlist({ userId: user.id, movieId }));
+    } else {
+      navigate("/login");
     }
-  }, [movieData, status]);
+  };
 
   const primaryColor = "#ea2a33";
   if (status === "loading") {
@@ -48,7 +50,6 @@ const Home = () => {
     >
       <div className="layout-container flex h-full grow flex-col">
         <main className="flex-1">
-          {/* Hero Section */}
           {featuredMovie && (
             <section
               className="relative min-h-[60vh] lg:min-h-[75vh] flex items-end p-4 sm:p-6 lg:p-12 bg-cover bg-center bg-no-repeat"
@@ -75,7 +76,6 @@ const Home = () => {
             </section>
           )}
 
-          {/* Trending Section */}
           <section className="py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
             <h2 className="text-white text-2xl sm:text-3xl font-bold leading-tight tracking-tight mb-6">
               Trending Now
@@ -85,12 +85,21 @@ const Home = () => {
                 movieData.slice(6, 14).map((movie) => (
                   <div
                     key={movie.id}
-                    className="group flex flex-col gap-3"
-                    onClick={() => {
-                      navigate(`/moviedetail/${movie.id}`);
-                    }}
+                    className="group flex flex-col gap-3 relative"
                   >
+                    {isAuthenticated && (
+                      <button
+                        onClick={(e) => handleAddToWatchlist(e, movie.id)}
+                        className="absolute top-2 right-2 flex items-center justify-center w-8 h-8 rounded-full bg-black/60 text-white hover:bg-gray-800 transition-colors z-10"
+                        title="Add to Watchlist"
+                      >
+                        <svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Zm0,177.57-51.77-32.35a8,8,0,0,0-8.48,0L72,209.57V48H184Z"></path>
+                        </svg>
+                      </button>
+                    )}
                     <div
+                      onClick={() => navigate(`/moviedetail/${movie.id}`)}
                       className="w-full bg-center bg-no-repeat aspect-[2/3] bg-cover rounded-md flex flex-col overflow-hidden transform transition-transform duration-300 group-hover:scale-105"
                       style={{
                         backgroundImage: `url(https://image.tmdb.org/t/p/w500/${movie.poster_path})`,

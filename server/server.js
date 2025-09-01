@@ -92,12 +92,39 @@ app.get("/movies", async (req, res) => {
 });
 
 //GET /movies/:id - Retrieve a specific movie with reviews
-app.get("/movie/:id", async (req, res) => {
+app.get("/movies/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
     const response = await axios.get(
       `${TMDB_BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}`,
+      {
+        headers: { Accept: "application/json" },
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+      }
+    );
+
+    const movie = response.data;
+
+    if (movie) {
+      res.status(200).json(movie);
+    } else {
+      res.status(404).json({ message: "Movie not found" });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching movies from TMDB",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/movies/cast/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const response = await axios.get(
+      `${TMDB_BASE_URL}/movie/${id}/credits?api_key=${TMDB_API_KEY}`,
       {
         headers: { Accept: "application/json" },
         httpsAgent: new https.Agent({ rejectUnauthorized: false }),
