@@ -6,6 +6,10 @@ import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import Movies from "./pages/Movies";
 import WatchList from "./pages/WatchList";
+import MovieDetail from "./pages/MovieDetai";
+import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import SignUp from "./pages/Signup";
 
 function App() {
   const routes = [
@@ -17,13 +21,31 @@ function App() {
         {
           path: "/",
           element: <Home />,
-        },{
-          path:'/movies',
+        },
+        {
+          path: "/movies",
           element: <Movies />,
-        },{
-          path:'/watchlist',
+        },
+        {
+          path: "/watchlist",
           element: <WatchList />,
-        }
+        },
+        {
+          path: "/profile",
+          element: <Profile />,
+        } /* ,
+        {
+          path: "/login",
+          element: <Login />,
+        },
+        {
+          path: "/signup",
+          element: <SignUp />,
+        },
+        {
+          path: "/movieDetail",
+          element: <MovieDetail />,
+        } */,
       ],
     },
   ];
