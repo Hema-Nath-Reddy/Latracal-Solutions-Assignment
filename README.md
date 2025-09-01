@@ -1,0 +1,94 @@
+<h1>Movie Review Platform</h1> 
+<p>
+  This is a comprehensive full-stack application for a movie review platform. 
+  The application allows users to browse movies, view detailed information, 
+  read and submit reviews, and manage a personal watchlist. The project is built 
+  with a modern technology stack, focusing on performance, scalability, and clean code architecture.
+</p> 
+
+<h2>Key Features</h2> 
+<ul> 
+  <li><strong>User Authentication:</strong> Secure user sign-up and login with password hashing.</li> 
+  <li><strong>Dynamic Movie Listings:</strong> Fetches trending movies from TMDB and supports searching and filtering by genre, year, and rating.</li> 
+  <li><strong>Movie Details Page:</strong> Displays in-depth information for individual movies, including cast, reviews, and a trailer link.</li> 
+  <li><strong>Review Submission:</strong> Authenticated users can submit star ratings and text reviews, which are stored in a MongoDB database.</li> 
+  <li><strong>Watchlist Functionality:</strong> Users can add or remove movies from their personal watchlist. The watchlist is persisted in the database and is accessible from any device.</li> 
+  <li><strong>Centralized State Management:</strong> The application uses Redux Toolkit to manage global state, ensuring data consistency and a smooth user experience by minimizing redundant API calls.</li> 
+</ul> 
+
+<h2>Technology Stack</h2> 
+<ul> 
+  <li><strong>Frontend:</strong> React, React Router, Redux Toolkit, Tailwind CSS</li> 
+  <li><strong>Backend:</strong> Node.js, Express</li> 
+  <li><strong>Database:</strong> MongoDB</li> 
+  <li><strong>External APIs:</strong> The Movie Database (TMDB) for movie information, posters, and cast; Cloudinary for secure user profile picture storage</li> 
+</ul> 
+
+<h2>Setup and Installation</h2> 
+<p>Follow these steps to get the project up and running on a local machine.</p> 
+
+<h3>1. Clone the Repository</h3> 
+<pre><code>
+git clone https://github.com/Hema-Nath-Reddy/Latracal-Solutions-Assignment 
+cd your-repository-name 
+</code></pre> 
+
+<h3>2. Backend Setup</h3> 
+<pre><code>
+cd server 
+npm install 
+npm start 
+</code></pre> 
+
+<h3>3. Frontend Setup</h3> 
+<pre><code>
+npm install 
+npm run dev 
+</code></pre> 
+<p>The application should now be running at <code>http://localhost:5173</code>.</p> 
+
+<h2>Environment Variables</h2> 
+<p>The application requires environment variables for both the backend and frontend to function correctly.</p> 
+
+<h3>Backend (.env)</h3> 
+<pre><code>
+MONGODB_URI=your_mongodb_connection_string 
+TMDB_KEY=your_tmdb_api_key 
+TMDB_ACCESS_TOKEN=your_tmdb_v4_access_token 
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name 
+CLOUDINARY_API_KEY=your_cloudinary_api_key 
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret 
+</code></pre> 
+
+<h2>API Documentation</h2> 
+<p>The backend exposes a RESTful API to manage movies, reviews, and user data.</p> 
+
+<h3>Movies</h3> 
+<ul> 
+  <li><code>GET /movies</code>: Retrieve a paginated and filtered list of movies from the TMDB API.</li> 
+  <li><code>GET /movies/:id</code>: Fetch details for a specific movie from the TMDB API.</li> 
+  <li><code>GET /movies/cast/:id</code>: Retrieve the cast for a specific movie from the TMDB API.</li> 
+  <li><code>POST /movies/:id/reviews</code>: Submit a new review for a movie (requires authentication).</li> 
+  <li><code>GET /movie/:id/reviews</code>: Get all user-submitted reviews for a specific movie.</li> 
+</ul> 
+
+<h3>Users &amp; Watchlist</h3> 
+<ul> 
+  <li><code>POST /signUp</code>: Register a new user and upload a profile picture.</li> 
+  <li><code>POST /logIn</code>: Authenticate a user and create a session.</li> 
+  <li><code>GET /users/:id</code>: Retrieve a user's profile and review history.</li> 
+  <li><code>GET /users/:id/watchlist</code>: Get the list of movies in a user's watchlist.</li> 
+  <li><code>POST /users/:id/watchlist</code>: Add a movie to a user's watchlist (requires authentication).</li> 
+  <li><code>DELETE /users/:id/watchlist/:movieId</code>: Remove a movie from a user's watchlist (requires authentication).</li> 
+</ul> 
+
+<h2>Additional Notes and Design Decisions</h2> 
+<ul> 
+  <li><strong>Frontend State Management:</strong> Redux Toolkit was chosen for its streamlined approach to state management, especially for asynchronous data fetching and global state such as user authentication and the watchlist.</li> 
+  <li><strong>Authentication:</strong> A simplified session management approach was used. On successful login, the user's ID and profile data are stored in <code>localStorage</code>, and the application's state is updated accordingly. This is handled by a custom <code>useAuth</code> hook.</li> 
+  <li><strong>Image Handling:</strong> To avoid storing large files in MongoDB, user profile pictures are uploaded to Cloudinary, and only the resulting public URL is saved in the database.</li> 
+  <li><strong>UI/UX:</strong> Frontend validation and React Hot Toast provide non-intrusive notifications for user feedback on actions like signing up or submitting reviews, improving the user experience.</li> 
+  <li><strong>Performance Optimization:</strong> The API endpoints are designed to handle filtering and pagination on the backend to reduce network bandwidth and ensure the application remains responsive, even with a large number of movies.</li> 
+</ul> 
+
+<hr> 
