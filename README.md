@@ -29,8 +29,8 @@
 
 <h3>1. Clone the Repository</h3> 
 <pre><code>
-git clone https://github.com/Hema-Nath-Reddy/Latracal-Solutions-Assignment 
-cd your-repository-name 
+git clone https://github.com/Hema-Nath-Reddy/tmdb-website
+cd tmdb-website
 </code></pre> 
 
 <h3>2. Backend Setup</h3> 
